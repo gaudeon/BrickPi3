@@ -1,22 +1,40 @@
+SWIG = swig
+
 CXX = g++
+
 CXXFLAGS = `perl -MConfig -e 'print join (" ", @Config{qw(ccflags optimize cccdlflags)}, "-I$$Config{archlib}/CORE")'`
+
 LDFLAGS = `perl -MConfig -e 'print $$Config{lddlflags}'`
 
-swig: test_wrap.cxx test.o test_wrap.o test.so
+FILE_I = test.i
+
+FILE_CXX = test.cxx
+
+FILE_WRAP_CXX = test_wrap.cxx
+
+FILE_PM: test.pm
+
+FILE_O = test.o
+
+FILE_WRAP_O = test_wrap.o
+
+FILE_SO = test.so
+
+swig: $(FILE_WRAP_CXX) $(FILE_O) $(FILE_WRAP_O) $(FILE_SO)
 
 clean:
-	rm -f test_wrap.cxx test.pm test.o test_wrap.o test.so
+	rm -f $(FILE_WRAP_CXX) $(FILE_PM) $(FILE_O) $(FILE_WRAP_O) $(FILE_SO)
 
-test_wrap.cxx:
-	swig -c++ -perl -outdir . test.i
+$(FILE_WRAP_CXX):
+	$(SWIG) -c++ -perl -outdir . $(FILE_I)
 
-test.o:
-	$(CXX) -c $(CXXFLAGS) test.cpp
+$(FILE_O):
+	$(CXX) -c $(CXXFLAGS) $(FILE_CXX)
 
-test_wrap.o:
-	$(CXX) -c $(CXXFLAGS) test_wrap.cxx 
+$(FILE_WRAP_O):
+	$(CXX) -c $(CXXFLAGS) $(FILE_WRAP_CXX)
 
-test.so:
-	$(CXX) $(LDFLAGS) test.o test_wrap.o -o test.so
+$(FILE_SO):
+	$(CXX) $(LDFLAGS) $(FILE_O) $(FILE_WRAP_O) -o $(FILE_SO)
 
 .PHONY: swig clean
