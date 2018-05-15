@@ -1,3 +1,6 @@
+CFLAGS = `perl -MConfig -e 'print join (" ", @Config{qw(ccflags optimize cccdlflags)}, "-I$$Config{archlib}/CORE")'`
+LDFLAGS = `perl -MConfig -e 'print $$Config{lddlflags}'`
+
 swig: test_wrap.cxx test.o test_wrap.o test.so
 
 clean:
@@ -7,12 +10,12 @@ test_wrap.cxx:
 	swig -c++ -perl test.i
 
 test.o:
-	g++ -c test.cpp
+	g++ -c $(CFLAGS) test.cpp
 
 test_wrap.o:
-	g++ -c test_wrap.cxx -I/usr/lib/arm-linux-gnueabihf/perl/5.20/CORE -Dbool=char
+	g++ -c $(CFLAGS) test_wrap.cxx 
 
 test.so:
-	gcc -shared test.o test_wrap.o -o test.so
+	gcc $(LDFLAGS) test.o test_wrap.o -o test.so
 
 .PHONY: swig clean

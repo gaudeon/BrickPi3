@@ -3,8 +3,4 @@
 #include "test.h"
 %}
 
-class test {
-    public:
-        test ();
-        int secret ();
-};
+%include "test.h"
